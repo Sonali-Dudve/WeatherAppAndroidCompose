@@ -4,13 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.spdfs.weatherappandroidcompose.ui.theme.WeatherAppAndroidComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeatherAppAndroidComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    NavigationGraph(innerPadding)
                 }
             }
         }
@@ -31,17 +35,36 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun MainScreen(innerPadding: PaddingValues) {
+    Column(
+        modifier = Modifier.padding(innerPadding)
+    ) {
+        Toolbar()
+        Spacer(modifier = Modifier.height(10.dp))
+        Greeting("Hello, here you can check the weather of any city")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Toolbar() {
+    TopAppBar(
+        title = { Text("Weather App") },
+    )
+}
+
+@Composable
+fun Greeting(msg: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
-        modifier = modifier
+        text = msg,
+        modifier = modifier.padding(10.dp)
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainScreenPreview() {
     WeatherAppAndroidComposeTheme {
-        Greeting("Android")
+        MainScreen(PaddingValues(8.dp))
     }
 }
