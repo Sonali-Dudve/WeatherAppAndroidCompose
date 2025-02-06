@@ -1,6 +1,7 @@
 package com.spdfs.weatherappandroidcompose
 
 import SuggestionBottomSheet
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.spdfs.weatherappandroidcompose.network.GetLocationData
 import com.spdfs.weatherappandroidcompose.network.LocationDataCallback
 import com.spdfs.weatherappandroidcompose.ui.theme.WeatherAppAndroidComposeTheme
@@ -75,6 +78,8 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
     @Preview
     @Composable
     fun selectCity() {
+
+        val context = LocalContext.current
 
         var city by remember { mutableStateOf("") }
         var selectedCity by remember { mutableStateOf(-1) }
@@ -179,7 +184,14 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
                 suggestions = citySuggestions,
                 onDismiss = {
                     showBottomSheet = false
-                    android.util.Log.d("SelectedCity", "${locationInfo[selectedCity][1]} ${locationInfo[selectedCity][2]}")
+                    val intent = Intent(context, WeatherHomeScreen::class.java).apply {
+                        putExtra("latitude", locationInfo[selectedCity][1])
+                        putExtra("longitude", locationInfo[selectedCity][2])
+                    }
+                    context.startActivity(intent)
+//                    val navigator = Navigator(navController)
+//                    navigator.navigate("weather info")
+//                    android.util.Log.d("SelectedCity", "${locationInfo[selectedCity][1]} ${locationInfo[selectedCity][2]}")
                             },
                 onItemSelected = { city ->
                     selectedCity = city

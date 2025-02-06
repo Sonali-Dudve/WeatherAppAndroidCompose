@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val intent = Intent(this, WeatherAppScreen::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, WeatherAppScreen::class.java)
+//        startActivity(intent)
 
     }
 }

@@ -36,7 +36,6 @@ class GetLocationData(private val callback: LocationDataCallback) : AsyncTask<St
                 val lat = jsonObject.getString("lat")
                 val lon = jsonObject.getString("lon")
 
-                android.util.Log.d("TESTAPI","Name: $name, Lat: $lat, Lon: $lon")
                 locationData.add(arrayOf("$name", "$lat", "$lon"))
             }
             callback.onLocationDataFetched(locationData)

@@ -14,11 +14,19 @@ fun NavigationGraph(innerPadding: PaddingValues) {
 
     NavHost(navController = navController, startDestination = "splash screen") {
         composable(route = "splash screen") {
-            SplashScreen(navController = navController) // splash screen
+            SplashScreen(navController = navController)
         }
 
+//        composable(route = "select city") {
+//            WeatherAppScreen(navController = navController)
+//        }
+//
+//        composable(route = "weather info") {
+//            WeatherHomeScreen(navController = navController)
+//        }
+
         composable(route = "main screen") {
-            MainScreen(innerPadding = innerPadding) // main screen
+            MainScreen(innerPadding = innerPadding)
         }
     }
 }

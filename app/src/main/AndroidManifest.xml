@@ -32,6 +32,12 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.WeatherAppAndroidCompose">
         </activity>
+
+        <activity
+            android:name=".WeatherHomeScreen"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WeatherAppAndroidCompose">
+        </activity>
     </application>
 
 </manifest>
