@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.spdfs.weatherappandroidcompose"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.spdfs.weatherappandroidcompose"
