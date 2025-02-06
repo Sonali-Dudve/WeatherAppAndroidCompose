@@ -47,8 +47,8 @@ import com.spdfs.weatherappandroidcompose.ui.theme.WeatherAppAndroidComposeTheme
 class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
 
 
-    private var citySuggestions by mutableStateOf<List<String>>(emptyList()) // Store API results
-    private var showBottomSheet by mutableStateOf(false) // Control BottomSheet visibility
+    private var citySuggestions by mutableStateOf<List<String>>(emptyList())
+    private var showBottomSheet by mutableStateOf(false)
 
     lateinit var locationInfo : List<Array<String>>
 
