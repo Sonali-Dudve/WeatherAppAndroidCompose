@@ -13,16 +13,13 @@ class WeatherViewModel : ViewModel() {
 
     private val apiKey = "0eeb4ce49778178c6780f5748911754d"
 
-    init {
-        getWeatherData()
-    }
 
-    private fun getWeatherData() {
+    fun getWeatherData( lat : Double,  lon : Double) {
         viewModelScope.launch {
             try {
                 val response = RetrofitInstance.api.getWeather(
-                    lat = 18.5515,
-                    lon = 73.9049,
+                    lat = lat,
+                    lon = lon,
                     apiKey = apiKey
                 )
                 _weatherState.value = WeatherState.Success(response)

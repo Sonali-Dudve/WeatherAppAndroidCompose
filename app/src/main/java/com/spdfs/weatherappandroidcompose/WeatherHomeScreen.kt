@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 
 class WeatherHomeScreen : ComponentActivity(){
 
@@ -50,11 +51,14 @@ class WeatherHomeScreen : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val latitude = intent.getStringExtra("latitude")
+        val longitude = intent.getStringExtra("longitude")
+
         setContent {
 
                 Scaffold(modifier = Modifier.fillMaxHeight(1f)) { innerPadding ->
                    val weatherViewModel : WeatherViewModel = viewModel()
-
+                    weatherViewModel.getWeatherData(latitude!!.toDouble(), longitude!!.toDouble())
                     WeatherScreen(weatherViewModel)
                 }
 
