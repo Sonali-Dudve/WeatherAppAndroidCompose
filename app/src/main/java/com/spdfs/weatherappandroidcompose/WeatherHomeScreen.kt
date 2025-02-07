@@ -1,5 +1,6 @@
 package com.spdfs.weatherappandroidcompose
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -21,8 +22,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,7 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
+
+
 
 class WeatherHomeScreen : ComponentActivity(){
 
@@ -56,14 +64,47 @@ class WeatherHomeScreen : ComponentActivity(){
 
         setContent {
 
-                Scaffold(modifier = Modifier.fillMaxHeight(1f)) { innerPadding ->
-                   val weatherViewModel : WeatherViewModel = viewModel()
-                    weatherViewModel.getWeatherData(latitude!!.toDouble(), longitude!!.toDouble())
-                    WeatherScreen(weatherViewModel)
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text(text = "Weather Info", style = TextStyle(color = Color.Black,fontSize = 20.sp, fontWeight = FontWeight.Bold )) },
+                        backgroundColor = Color.White,
+                        contentColor = Color.Black,
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                val intent = Intent(this
+                                    , WeatherAppScreen::class.java)
+                                this.startActivity(intent)
+                            }) {
+                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { /* Handle right icon action */ }) {
+                                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                            }
+                        },
+                        modifier = Modifier.height(80.dp)  // Adjust height to make it broader
+                    )
+                },
+                content = { paddingValues ->
+                    // Apply padding to start the UI below the toolbar
+                    Column(modifier = Modifier.padding(paddingValues)) {
+                        val weatherViewModel : WeatherViewModel = viewModel()
+                        weatherViewModel.getWeatherData(latitude!!.toDouble(), longitude!!.toDouble())
+                        WeatherScreen(weatherViewModel)
+                    }
                 }
+            )
+        }
+
+
+
+
+
 
         }
-    }
+
 }
 
 
@@ -133,7 +174,7 @@ fun CustomCardLayout(weatherResponse : WeatherResponse) {
                             Text(text = weatherResponse.weather[0].description, style = TextStyle(color = Color.White,fontSize = 24.sp, fontWeight = FontWeight.Bold ))
                         }
                         Image(
-                            painter = painterResource(id = R.drawable.sunrays),
+                            painter = painterResource(id = R.drawable.sun),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -189,13 +230,18 @@ fun SmallCard(title: String,imageResorceId: Int, description: String) {
     Card(
         modifier = Modifier
             .width(180.dp)  // Make the cards a bit smaller
-            .height(180.dp),
-        elevation =  CardDefaults.cardElevation(20.dp)
+            .height(180.dp)
+
+           ,
+        elevation =  CardDefaults.cardElevation(20.dp),
+
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(colorResource(id = R.color.white))
                 .padding(16.dp)
+
             ,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
