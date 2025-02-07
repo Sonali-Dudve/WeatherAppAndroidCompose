@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.spdfs.weatherappandroidcompose.Navigator
 import com.spdfs.weatherappandroidcompose.R
 import com.spdfs.weatherappandroidcompose.WeatherAppScreen
 
@@ -99,7 +98,12 @@ fun SplashScreenContent(navController: NavHostController, scale: Float) {
                 .padding(bottom = 10.dp)
                 .align(Alignment.CenterHorizontally)
                 .size(220.dp, 50.dp),
-            colors = ButtonColors(containerColor = Color.Yellow, contentColor = colorResource(R.color.purple_700), disabledContentColor = Color.Green, disabledContainerColor = Color.Black),
+            colors = ButtonColors(
+                containerColor = Color.Yellow,
+                contentColor = colorResource(R.color.purple_700),
+                disabledContentColor = Color.Black,
+                disabledContainerColor = Color.Green
+            ),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(2.dp, Color.Yellow)
         ) {

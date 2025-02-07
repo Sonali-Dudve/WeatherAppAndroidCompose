@@ -9,22 +9,39 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.spdfs.weatherappandroidcompose.dao.CityDao
+import com.spdfs.weatherappandroidcompose.db.ObjectBox
 import com.spdfs.weatherappandroidcompose.ui.theme.WeatherAppAndroidComposeTheme
+import io.objectbox.BoxStore
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var store: BoxStore
+    private lateinit var cityDao: CityDao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        ObjectBox.init(this)
         setContent {
             WeatherAppAndroidComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -44,7 +61,6 @@ fun MainScreen(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier.padding(innerPadding)
     ) {
-        Toolbar()
         Spacer(modifier = Modifier.height(10.dp))
         Greeting("Hello, here you can check the weather of any city")
     }
@@ -52,9 +68,39 @@ fun MainScreen(innerPadding: PaddingValues) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Toolbar() {
+fun Toolbar(title: String, endIconVisible: Boolean, intent: Intent) {
+    val context = LocalContext.current
     TopAppBar(
-        title = { Text("Weather App") },
+        title = {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .wrapContentSize(Alignment.Center)
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = {
+
+            }) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            }
+        },
+        actions = {
+            if (endIconVisible)
+                IconButton(
+                    onClick = {
+                        val intent = Intent(context, CityWeatherHistoryScreen()::class.java)
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Weather info"
+                    )
+                }
+        }
+
     )
 }
 
