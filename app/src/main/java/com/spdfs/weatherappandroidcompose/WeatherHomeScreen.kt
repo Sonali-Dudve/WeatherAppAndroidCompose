@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -128,100 +130,109 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
     }
 }
 
+
 @Preview
 @Composable
-fun CustomCardLayout(weatherResponse : WeatherResponse) {
+fun CustomCardLayout(weatherResponse: WeatherResponse) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
+                .fillMaxWidth()
                 .padding(16.dp)
-
-
         ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(10.dp),
-                colors = CardDefaults.cardColors(
-                    contentColor = Color.Blue
-                )
-
+                colors = CardDefaults.cardColors(contentColor = Color.Blue)
             ) {
-
-                    Row(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colorResource(id = R.color.dark_blue)),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(colorResource(id = R.color.dark_blue)),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .weight(1f),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                                .weight(1f),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.height(40.dp))
-                            Text(text = weatherResponse.name, style = TextStyle(color = Color.White,fontSize = 36.sp, fontWeight = FontWeight.Bold ))
-                            Spacer(modifier = Modifier.height(40.dp))
-                            Text(text = weatherResponse.sys.country ,  style = TextStyle(color = Color.Yellow,fontSize = 24.sp, fontWeight = FontWeight.Bold ))
-                            Spacer(modifier = Modifier.height(40.dp),)
-                            Text(text = weatherResponse.main.temp.toString() +" C ", style = TextStyle(color = Color.Yellow,fontSize = 34.sp, fontWeight = FontWeight.Bold ))
-                            Spacer(modifier = Modifier.height(40.dp))
-                            Text(text = weatherResponse.weather[0].description, style = TextStyle(color = Color.White,fontSize = 24.sp, fontWeight = FontWeight.Bold ))
-                        }
-                        Image(
-                            painter = painterResource(id = R.drawable.sun),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Text(
+                            text = weatherResponse.name,
+                            style = TextStyle(color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
                         )
-
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Text(
+                            text = weatherResponse.sys.country,
+                            style = TextStyle(color = colorResource(id = R.color.text_yellow), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Text(
+                            text = weatherResponse.main.temp.toString() + " C ",
+                            style = TextStyle(color = colorResource(id = R.color.text_yellow), fontSize = 34.sp, fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Text(
+                            text = weatherResponse.weather[0].description,
+                            style = TextStyle(color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        )
                     }
-
-
+                    Image(
+                        painter = painterResource(id = R.drawable.sun),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
+                    )
+                }
             }
         }
 
-
+        // Second box that holds the smaller cards
         Box(
             modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
+                .fillMaxWidth()
                 .padding(16.dp)
-
         ) {
-            // Grid of 4 smaller cards
+            // Grid of smaller cards
             Column(
-                modifier = Modifier.fillMaxSize() ,
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // First row of 2 cards
                 Row(
-                    modifier = Modifier.fillMaxWidth() ,
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    SmallCard("Wind Speed",R.drawable.windspeed, weatherResponse.wind.speed.toString())
-                    SmallCard("WindDirection",R.drawable.wind_dir ,weatherResponse.wind.deg.toString())
+                    SmallCard("Wind Speed", R.drawable.windspeed, weatherResponse.wind.speed.toString())
+                    SmallCard("Wind Direction", R.drawable.wind_dir, weatherResponse.wind.deg.toString())
                 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    SmallCard("Pressure",R.drawable.clock, weatherResponse.main.pressure.toString())
-                    SmallCard("Humidity", R.drawable.humidity,weatherResponse.main.humidity.toString())
+                    SmallCard("Pressure", R.drawable.clock, weatherResponse.main.pressure.toString())
+                    SmallCard("Humidity", R.drawable.humidity, weatherResponse.main.humidity.toString())
                 }
             }
         }
     }
 }
+
+
 
 
 
@@ -252,12 +263,20 @@ fun SmallCard(title: String,imageResorceId: Int, description: String) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(40.dp)
+                    .size(50.dp)
                     .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
             )
-            Text(text = description)
+
+            Text(
+                text = description,
+                style = TextStyle(color = colorResource(id = R.color.text_yellow), fontSize = 34.sp, fontWeight = FontWeight.Bold)
+            )
              Spacer(modifier = Modifier.height(8.dp))
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = title,
+                style = TextStyle(color = Color.Blue, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            )
+
 
         }
     }
