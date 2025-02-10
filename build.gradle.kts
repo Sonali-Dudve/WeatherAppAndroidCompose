@@ -3,3 +3,16 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
 }
+
+buildscript {
+    val objectboxVersion by extra("4.0.3")
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath(libs.gradle)
+        classpath("io.objectbox:objectbox-gradle-plugin:$objectboxVersion")
+    }
+}

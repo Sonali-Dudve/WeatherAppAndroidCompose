@@ -2,8 +2,10 @@ package com.spdfs.weatherappandroidcompose
 
 import SuggestionBottomSheet
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
@@ -40,6 +42,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
+
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.spdfs.weatherappandroidcompose.network.GetLocationData
@@ -52,34 +64,96 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
 
     private var citySuggestions by mutableStateOf<List<String>>(emptyList())
     private var showBottomSheet by mutableStateOf(false)
+    private var isLoading by mutableStateOf(false)
+    private var isError by mutableStateOf(false)
+
+
 
     lateinit var locationInfo : List<Array<String>>
 
     override fun onLocationDataFetched(locationData: List<Array<String>>) {
-        locationInfo = locationData
-        citySuggestions = locationData.map { it[0] }
-        showBottomSheet = citySuggestions.isNotEmpty() 
+        isLoading = false
+        if(locationData.isNotEmpty()) {
+            locationInfo = locationData
+            citySuggestions = locationData.map { it[0] }
+            showBottomSheet = citySuggestions.isNotEmpty()
+        }else {
+            isError = true
+        }
     }
 
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         setContent {
             WeatherAppAndroidComposeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    topBar =
+                    { TopAppBar(
+                        title = { Text("Best Weather App") },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color(0xFF2196F3) // Blue color
+                        ),
+//                        navigationIcon = {
+//                            IconButton(onClick = { onBackPressed() }) {
+//                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+//                            }
+//                        }
+                    )}
+                    ) { innerPadding ->
                     selectCity()
                 }
             }
         }
     }
 
+    @Composable
+    fun ErrorDialog() {
+            AlertDialog(
+                onDismissRequest = {  },
+                title = { Text("Invalid Input") },
+                text = { Text("The input you provided is incorrect. Please try again.") },
+                confirmButton = {
+                },
+                dismissButton = {
+                    TextButton(onClick = { isError = false }) {
+                        Text("Dismiss")
+                    }
+                }
+            )
+    }
+
+
+
+    @Composable
+    fun LoadingDialog() {
+        AlertDialog(
+            onDismissRequest = {  },
+            confirmButton = {},
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+        )
+    }
 
     @Preview
     @Composable
     fun selectCity() {
+        val scrollState = rememberScrollState()
 
         val context = LocalContext.current
+
 
         var city by remember { mutableStateOf("") }
         var selectedCity by remember { mutableStateOf(-1) }
@@ -88,20 +162,18 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .background(Color.White)
+                .verticalScroll(scrollState)
+,            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
+            Spacer(modifier = Modifier.height(30.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { /* Handle Back Navigation */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_arrow_back_ic),
-                        contentDescription = "Back Button"
-                    )
-                }
 
 
                 Box(
@@ -114,28 +186,36 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
                         text = "Choose a City",
                         textAlign = TextAlign.Center,
                         style = TextStyle(
-                            fontSize = 48.sp,
+                            fontSize = 38.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                     )
                 }
             }
+            if (isLoading) {
+                LoadingDialog()
+            }
 
+            if(isError){
+                ErrorDialog()
+            }
 
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Text(
                 text = "Write the name of city which you want to see the weather",
                 style = TextStyle(
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     color = Color.Gray
                 ),
                 modifier = Modifier.padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+            Spacer(modifier = Modifier.height(100.dp))
+
+
 
             Image(
                 painter = painterResource(id = R.drawable.weather_ic),
@@ -159,10 +239,11 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
                     .padding(16.dp)
             )
 
-            Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+            Spacer(modifier = Modifier.height(70.dp))
 
             Button(
                 onClick = {
+                    isLoading = true
                     GetLocationData(this@WeatherAppScreen).execute(city)
                 },
                 modifier = Modifier

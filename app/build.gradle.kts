@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
+    id("io.objectbox")
 }
 
 android {
@@ -74,4 +76,9 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.objectbox.android)
+    implementation(libs.objectbox.kotlin)
+    implementation(libs.objectbox.gradle.plugin)
+    implementation(libs.objectbox.gradle.plugin)
+    annotationProcessor(libs.objectbox.processor)
 }
