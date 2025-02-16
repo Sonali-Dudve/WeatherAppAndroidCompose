@@ -265,7 +265,7 @@ class WeatherAppScreen : ComponentActivity(), LocationDataCallback {
                 suggestions = citySuggestions,
                 onDismiss = {
                     showBottomSheet = false
-                    val intent = Intent(context, WeatherHomeScreen::class.java).apply {
+                    val intent = Intent(context, ChatUI::class.java).apply {
                         putExtra("latitude", locationInfo[selectedCity][1])
                         putExtra("longitude", locationInfo[selectedCity][2])
                     }
