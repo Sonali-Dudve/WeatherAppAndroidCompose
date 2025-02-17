@@ -55,9 +55,35 @@ class ChatUI : ComponentActivity() {
     @Preview
     @Composable
     fun ChatScreen() {
+
         var messages by remember { mutableStateOf(listOf<Message>()) }
         var messageText by remember { mutableStateOf("") }
         val keyboardController = LocalSoftwareKeyboardController.current
+
+        fun handleSend(){
+            if (messageText.isNotBlank()) {
+                val userMessage = messageText.trim()
+
+                messages = messages + Message(
+                    text = messageText,
+                    isSent = true,
+                    timestamp = SimpleDateFormat(
+                        "hh:mm a",
+                        Locale.getDefault()
+                    ).format(Date())
+                )
+
+                val autoReply = getReply(userMessage)
+                messages = messages + Message(
+                    text = autoReply,
+                    isSent = false,
+                    timestamp = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
+                )
+
+                messageText = ""
+                keyboardController?.hide()
+            }
+        }
 
         Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF2F2F2))) {
             TopAppBar(
@@ -106,55 +132,14 @@ class ChatUI : ComponentActivity() {
                     ),
                     keyboardActions = KeyboardActions(
                         onSend = {
-                            if (messageText.isNotBlank()) {
-                                val userMessage = messageText.trim()
-
-                                messages = messages + Message(
-                                    text = messageText,
-                                    isSent = true,
-                                    timestamp = SimpleDateFormat(
-                                        "hh:mm a",
-                                        Locale.getDefault()
-                                    ).format(Date())
-                                )
-
-                                val autoReply = getReply(userMessage)
-                                messages = messages + Message(
-                                    text = autoReply,
-                                    isSent = false,
-                                    timestamp = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-                                )
-
-                                messageText = ""
-                                keyboardController?.hide()
-                            }
+                            handleSend()
                         }
                     ),
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
                 IconButton(
                     onClick = {
-                        if (messageText.isNotBlank()) {
-                            val userMessage = messageText.trim()
-
-                            messages = messages + Message(
-                                text = messageText,
-                                isSent = true,
-                                timestamp = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(
-                                    Date()
-                                )
-                            )
-
-                            val autoReply = getReply(userMessage)
-                            messages = messages + Message(
-                                text = autoReply,
-                                isSent = false,
-                                timestamp = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-                            )
-
-                            messageText = ""
-                            keyboardController?.hide()
-                        }
+                        handleSend()
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
@@ -175,9 +160,9 @@ class ChatUI : ComponentActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onHorizontalDrag = { change, dragAmount -> onSwipeToDelete() }
-                    )
+//                    detectHorizontalDragGestures(
+//                        onHorizontalDrag = { change, dragAmount -> onSwipeToDelete() }
+//                    )
                 },
             horizontalArrangement = if (message.isSent) Arrangement.End else Arrangement.Start
         ) {
