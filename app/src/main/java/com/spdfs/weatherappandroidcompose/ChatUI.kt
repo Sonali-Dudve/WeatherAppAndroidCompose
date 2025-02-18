@@ -1,6 +1,11 @@
 package com.spdfs.weatherappandroidcompose
 
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -21,8 +26,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +68,11 @@ class ChatUI : ComponentActivity() {
         var messages by remember { mutableStateOf(listOf<Message>()) }
         var messageText by remember { mutableStateOf("") }
         val keyboardController = LocalSoftwareKeyboardController.current
+        val context = LocalContext.current
+        val micIcon = ImageVector.vectorResource(id = R.drawable.baseline_mic_24)
+        val micOffIcon = ImageVector.vectorResource(id = R.drawable.baseline_mic_none_24)
+
+        var currentIcon by remember { mutableStateOf(micOffIcon) }
 
         fun handleSend(){
             if (messageText.isNotBlank()) {
@@ -85,7 +99,40 @@ class ChatUI : ComponentActivity() {
             }
         }
 
-        Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF2F2F2))) {
+        fun startSpeechToText() {
+            val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...")
+
+            speechRecognizer.setRecognitionListener(object : RecognitionListener {
+                override fun onResults(results: Bundle?) {
+                    results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.let {
+                        messageText = it
+                        currentIcon = micOffIcon
+                    }
+                }
+                override fun onError(error: Int) {
+                    currentIcon = micOffIcon
+                    Toast.makeText(context, "Error: $error", Toast.LENGTH_SHORT).show() }
+                override fun onReadyForSpeech(params: Bundle?) {
+                    currentIcon = micIcon
+                }
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {}
+                override fun onPartialResults(partialResults: Bundle?) {}
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
+
+            speechRecognizer.startListening(intent)
+        }
+
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F2F2))) {
             TopAppBar(
                 title = { Text("Chat", color = Color.White) },
                 backgroundColor = Color(0xFF3700B3),
@@ -101,7 +148,9 @@ class ChatUI : ComponentActivity() {
             )
 
             LazyColumn(
-                modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
                 reverseLayout = true
             ) {
                 items(messages.reversed()) { message ->
@@ -137,6 +186,9 @@ class ChatUI : ComponentActivity() {
                     ),
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
+                IconButton(onClick = { startSpeechToText() }) {
+                    Icon(imageVector = currentIcon, contentDescription = "Voice Input", tint = Color(0xFF3700B3))
+                }
                 IconButton(
                     onClick = {
                         handleSend()
