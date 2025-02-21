@@ -39,26 +39,93 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.spdfs.weatherappandroidcompose.dao.Message
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatUI : ComponentActivity() {
+    var lat = ""
+    var lon = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lat = intent.getStringExtra("latitude").toString()
+        lon = intent.getStringExtra("longitude").toString()
         setContent { ChatScreen() }
     }
 
+    suspend fun fetchLocationData(): String {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient()
+            val url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon"
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseData = response.body?.string() ?: return@withContext "Unknown location"
 
-    val automaticReplies = mapOf(
-        "hi" to "Hello! How can I assist you today?",
-        "location" to "Your location is Pune, India.",
-        "temperature" to "The current temperature is 28°C.",
-        "humidity" to "The current humidity is 65%.",
-        "aqi" to "The AQI is 80, which is considered good."
-    )
+            val json = JSONObject(responseData)
+            return@withContext json.optString("display_name", "Unknown location")
+        }
+    }
 
-    fun getReply(userMessage: String): String {
-        return automaticReplies[userMessage.toLowerCase()] ?: "Sorry, I didn't understand that. Try asking about location, temperature, humidity, or AQI."
+    suspend fun fetchWeatherData(type: String): String {
+        return withContext(Dispatchers.IO) {
+
+            val client = OkHttpClient()
+            val url =
+                "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,relative_humidity_2m"
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseData = response.body?.string() ?: return@withContext "N/A"
+
+            val json = JSONObject(responseData)
+            val currentWeather = json.getJSONObject("current")
+
+            android.util.Log.d("CompleteAPI", responseData)
+            return@withContext when (type) {
+                "temperature" -> currentWeather.getDouble("temperature_2m").toString()
+                "humidity" -> currentWeather.getDouble("relative_humidity_2m").toString()
+                else -> "N/A"
+            }
+        }
+    }
+
+    suspend fun fetchAQIData(): String {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient()
+            val url = "https://api.waqi.info/feed/geo:$lat;$lon/?token=demo"
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).execute()
+            val responseData = response.body?.string() ?: return@withContext "N/A"
+
+            val json = JSONObject(responseData)
+            return@withContext json.getJSONObject("data").getInt("aqi").toString()
+        }
+    }
+
+
+    suspend fun getReply(userMessage: String): String {
+        return withContext(Dispatchers.IO) {
+
+            return@withContext when (userMessage.lowercase()) {
+                "temperature" -> fetchWeatherData("temperature")
+                "hi" -> {
+                    "Hello! How can I assist you today?"
+                }
+
+                "location" -> {
+                    fetchLocationData()
+                }
+
+                "humidity" -> fetchWeatherData("humidity")
+                "aqi" -> fetchAQIData()
+                else -> "Sorry, I didn't understand that. Try asking about location, temperature, humidity, or AQI."
+            }
+        }
     }
 
     @Preview
@@ -71,10 +138,12 @@ class ChatUI : ComponentActivity() {
         val context = LocalContext.current
         val micIcon = ImageVector.vectorResource(id = R.drawable.baseline_mic_24)
         val micOffIcon = ImageVector.vectorResource(id = R.drawable.baseline_mic_none_24)
+        val coroutineScope = rememberCoroutineScope()
+
 
         var currentIcon by remember { mutableStateOf(micOffIcon) }
 
-        fun handleSend(){
+        suspend fun handleSend(){
             if (messageText.isNotBlank()) {
                 val userMessage = messageText.trim()
 
@@ -181,7 +250,9 @@ class ChatUI : ComponentActivity() {
                     ),
                     keyboardActions = KeyboardActions(
                         onSend = {
-                            handleSend()
+                            coroutineScope.launch {
+                                handleSend()
+                            }
                         }
                     ),
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
@@ -191,7 +262,9 @@ class ChatUI : ComponentActivity() {
                 }
                 IconButton(
                     onClick = {
-                        handleSend()
+                        coroutineScope.launch {
+                            handleSend()
+                        }
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
