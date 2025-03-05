@@ -60,7 +60,7 @@ class CityWeatherHistoryScreen : ComponentActivity() {
                     shape = RectangleShape
                 ) {
                     Column {
-                        Toolbar("Weather History", false, intent)
+                        Toolbar("Weather History", false, intent, true)
                         SelectCityDropdown(
                             cities = allCities,
                             onCitySelected = {

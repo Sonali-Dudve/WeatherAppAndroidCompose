@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -66,12 +67,9 @@ class WeatherHomeScreen : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val latitude = intent.getStringExtra("latitude")
-        val longitude = intent.getStringExtra("longitude")
-
-        val intent = Intent(this, WeatherAppScreen::class.java)
 
         setContent {
+            val context = LocalContext.current
 
             Scaffold(
                 topBar = {
@@ -89,7 +87,11 @@ class WeatherHomeScreen : ComponentActivity(){
                             }
                         },
                         actions = {
-                            IconButton(onClick = { /* Handle right icon action */ }) {
+                            IconButton(onClick = {
+                                val intent = Intent(context, CityWeatherHistoryScreen::class.java)
+                                context.startActivity(intent)
+
+                                /* Handle right icon action */ }) {
                                 Icon(Icons.Filled.Settings, contentDescription = "Settings")
                             }
                         },
@@ -100,7 +102,7 @@ class WeatherHomeScreen : ComponentActivity(){
                     // Apply padding to start the UI below the toolbar
                     Column(modifier = Modifier.padding(paddingValues)) {
                         val weatherViewModel : WeatherViewModel = viewModel()
-                        weatherViewModel.getWeatherData(latitude!!.toDouble(), longitude!!.toDouble())
+                        weatherViewModel.getWeatherData(LocationInfo.latitude!!.toDouble(), LocationInfo.longitude!!.toDouble())
                         WeatherScreen(weatherViewModel)
                     }
                 }

@@ -50,19 +50,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatUI : ComponentActivity() {
-    var lat = ""
-    var lon = ""
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lat = intent.getStringExtra("latitude").toString()
-        lon = intent.getStringExtra("longitude").toString()
         setContent { ChatScreen() }
     }
 
     suspend fun fetchLocationData(): String {
         return withContext(Dispatchers.IO) {
             val client = OkHttpClient()
-            val url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon"
+            val url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=${LocationInfo.latitude}&lon=${LocationInfo.longitude}"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             val responseData = response.body?.string() ?: return@withContext "Unknown location"
@@ -77,7 +75,7 @@ class ChatUI : ComponentActivity() {
 
             val client = OkHttpClient()
             val url =
-                "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,relative_humidity_2m"
+                "https://api.open-meteo.com/v1/forecast?latitude=${LocationInfo.latitude}&longitude=${LocationInfo.longitude}&current=temperature_2m,relative_humidity_2m"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             val responseData = response.body?.string() ?: return@withContext "N/A"
@@ -97,7 +95,7 @@ class ChatUI : ComponentActivity() {
     suspend fun fetchAQIData(): String {
         return withContext(Dispatchers.IO) {
             val client = OkHttpClient()
-            val url = "https://api.waqi.info/feed/geo:$lat;$lon/?token=demo"
+            val url = "https://api.waqi.info/feed/geo:${LocationInfo.latitude};${LocationInfo.longitude}/?token=demo"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             val responseData = response.body?.string() ?: return@withContext "N/A"
@@ -204,9 +202,9 @@ class ChatUI : ComponentActivity() {
             .background(Color(0xFFF2F2F2))) {
             TopAppBar(
                 title = { Text("Chat", color = Color.White) },
-                backgroundColor = Color(0xFF3700B3),
+                backgroundColor = Color(0xFF2196F3),
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back press */ }) {
+                    IconButton(onClick = { onBackPressedDispatcher.onBackPressed() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
@@ -258,7 +256,7 @@ class ChatUI : ComponentActivity() {
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
                 IconButton(onClick = { startSpeechToText() }) {
-                    Icon(imageVector = currentIcon, contentDescription = "Voice Input", tint = Color(0xFF3700B3))
+                    Icon(imageVector = currentIcon, contentDescription = "Voice Input", tint = Color(0xFF2196F3))
                 }
                 IconButton(
                     onClick = {
@@ -271,7 +269,7 @@ class ChatUI : ComponentActivity() {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = Color(0xFF3700B3)
+                        tint = Color(0xFF2196F3)
                     )
                 }
             }
@@ -295,7 +293,7 @@ class ChatUI : ComponentActivity() {
                 modifier = Modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .background(
-                        if (message.isSent) Color(0xFF6200EE) else Color(0xFFE0E0E0),
+                        if (message.isSent) Color(0xFF2196F3) else Color(0xFFE0E0E0),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .padding(12.dp)

@@ -3,6 +3,7 @@ package com.spdfs.weatherappandroidcompose
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,8 +72,10 @@ fun MainScreen(innerPadding: PaddingValues) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Toolbar(title: String, endIconVisible: Boolean, intent: Intent) {
+fun Toolbar(title: String, endIconVisible: Boolean, intent: Intent, showChat : Boolean? = false) {
     val context = LocalContext.current
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
     TopAppBar(
         title = {
             Text(
@@ -81,13 +87,13 @@ fun Toolbar(title: String, endIconVisible: Boolean, intent: Intent) {
         },
         navigationIcon = {
             IconButton(onClick = {
-
+                dispatcher?.onBackPressed()
             }) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
             }
         },
         actions = {
-            if (endIconVisible)
+            if (endIconVisible) {
                 IconButton(
                     onClick = {
                         val intent = Intent(context, CityWeatherHistoryScreen()::class.java)
@@ -99,6 +105,18 @@ fun Toolbar(title: String, endIconVisible: Boolean, intent: Intent) {
                         contentDescription = "Weather info"
                     )
                 }
+            }else if (showChat == true){
+                    IconButton(onClick = {
+                        val intent = Intent(context, ChatUI()::class.java)
+                        context.startActivity(intent)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "Chat",
+                            tint = Color.Black
+                        )
+                    }
+            }
         }
 
     )
