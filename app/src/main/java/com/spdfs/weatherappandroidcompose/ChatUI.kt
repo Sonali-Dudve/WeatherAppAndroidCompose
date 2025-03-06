@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -201,14 +202,14 @@ class ChatUI : ComponentActivity() {
             .fillMaxSize()
             .background(Color(0xFFF2F2F2))) {
             TopAppBar(
-                title = { Text("Chat", color = Color.White) },
-                backgroundColor = Color(0xFF2196F3),
+                title = { Text("Chat", color = Color.Black) },
+                backgroundColor = Color.White,
                 navigationIcon = {
                     IconButton(onClick = { onBackPressedDispatcher.onBackPressed() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                 }
@@ -256,7 +257,7 @@ class ChatUI : ComponentActivity() {
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
                 IconButton(onClick = { startSpeechToText() }) {
-                    Icon(imageVector = currentIcon, contentDescription = "Voice Input", tint = Color(0xFF2196F3))
+                    Icon(imageVector = currentIcon, contentDescription = "Voice Input", tint = colorResource(id = R.color.dark_blue))
                 }
                 IconButton(
                     onClick = {
@@ -269,7 +270,7 @@ class ChatUI : ComponentActivity() {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = Color(0xFF2196F3)
+                        tint = colorResource(id = R.color.dark_blue)
                     )
                 }
             }
@@ -293,7 +294,7 @@ class ChatUI : ComponentActivity() {
                 modifier = Modifier
                     .padding(vertical = 4.dp, horizontal = 8.dp)
                     .background(
-                        if (message.isSent) Color(0xFF2196F3) else Color(0xFFE0E0E0),
+                        if (message.isSent) colorResource(id = R.color.dark_blue) else Color(0xFFE0E0E0),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .padding(12.dp)

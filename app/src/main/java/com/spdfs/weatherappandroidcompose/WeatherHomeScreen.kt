@@ -31,6 +31,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -92,7 +95,7 @@ class WeatherHomeScreen : ComponentActivity(){
                                 context.startActivity(intent)
 
                                 /* Handle right icon action */ }) {
-                                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                                Icon(Icons.Filled.Search, contentDescription = "Settings")
                             }
                         },
                         modifier = Modifier.height(80.dp)  // Adjust height to make it broader
