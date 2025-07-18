@@ -37,6 +37,10 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
+      - name: List APKs
+        run: find app/build/outputs -type f
+
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
