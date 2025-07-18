@@ -27,8 +27,8 @@ jobs:
         run: |
           VERSION_CODE=$(date +%s)
           VERSION_NAME="1.0.$(date +%Y%m%d%H%M)"
-          sed -i "s/versionCode *= *[0-9]\+/versionCode = $VERSION_CODE/" app/build.gradle
-          sed -i "s/versionName *= *\"[^\"]*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle
+          sed -i "s/versionCode = [0-9]\+/versionCode = $VERSION_CODE/" app/build.gradle.kts
+          sed -i "s/versionName = \".*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle.kts
           echo "Updated versionCode to $VERSION_CODE and versionName to $VERSION_NAME"
 
       - name: Grant execute permission to Gradle
