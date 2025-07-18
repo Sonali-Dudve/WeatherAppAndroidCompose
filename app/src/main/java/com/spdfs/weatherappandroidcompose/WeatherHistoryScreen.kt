@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Surface
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.spdfs.weatherappandroidcompose.dao.CityDao
 import com.spdfs.weatherappandroidcompose.dao.WeatherHistoryDao
@@ -77,4 +79,13 @@ class CityWeatherHistoryScreen : ComponentActivity() {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun weatherHistoryData() {
+    val weatherHistoryList = mutableListOf<WeatherEntity>()
+
+    weatherHistoryList.add(1, WeatherEntity(1, "Pune", temp = 34.22, date = "12/02/24", dir = 23, speed = 150.2, pressure = 45.4))
+    WeatherHistoryList(weatherHistoryList)
 }

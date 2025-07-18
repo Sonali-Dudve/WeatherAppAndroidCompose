@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.1"
+constraintlayoutCompose = "1.0.1"
 gradle = "8.1.0"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
@@ -21,8 +22,14 @@ runtimeLivedata = "1.7.7"
 kapt = "2.1.10"
 objectBox = "4.0.3"
 kotlinPlugin = "2.1.10"
+streamChat = "6.7.0"
+appcompat = "1.7.0"
+materialVersion = "1.12.0"
+activity = "1.10.0"
+constraintlayout = "2.2.0"
 
 [libraries]
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -47,6 +54,12 @@ objectbox-android = { module = "io.objectbox:objectbox-android", version.ref = "
 objectbox-gradle-plugin = { module = "io.objectbox:objectbox-gradle-plugin", version.ref = "objectboxGradlePlugin" }
 objectbox-kotlin = { module = "io.objectbox:objectbox-kotlin", version.ref = "objectboxKotlin" }
 objectbox-processor = { module = "io.objectbox:objectbox-processor", version.ref = "objectboxProcessor" }
+stream-chat-android-compose = { module = "io.getstream:stream-chat-android-compose", version.ref = "streamChat" }
+stream-chat-android-ai-assistant = { module = "io.getstream:stream-chat-android-ai-assistant", version.ref = "streamChat" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

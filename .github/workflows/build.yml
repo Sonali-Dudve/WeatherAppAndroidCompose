@@ -1,0 +1,44 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Increment versionCode and versionName
+        run: |
+          VERSION_CODE=$(date +%s)
+          VERSION_NAME="1.0.$(date +%Y%m%d%H%M)"
+          sed -i "s/versionCode *= *[0-9]\+/versionCode = $VERSION_CODE/" app/build.gradle
+          sed -i "s/versionName *= *\"[^\"]*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle
+          echo "Updated versionCode to $VERSION_CODE and versionName to $VERSION_NAME"
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk

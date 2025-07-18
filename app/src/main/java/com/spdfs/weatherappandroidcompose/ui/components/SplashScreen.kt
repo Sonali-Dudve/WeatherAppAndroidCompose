@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.spdfs.weatherappandroidcompose.Navigator
 import com.spdfs.weatherappandroidcompose.R
 import com.spdfs.weatherappandroidcompose.WeatherAppScreen
 
@@ -85,9 +86,9 @@ fun SplashScreenContent(navController: NavHostController, scale: Float) {
         Spacer(modifier = Modifier.height(10.dp))
         ElevatedButton(
             onClick = {
-//                val navigator = Navigator(navController)
-//                navController.popBackStack()
-//                navigator.navigate("main screen")
+                val navigator = Navigator(navController)
+                navController.popBackStack()
+                navigator.navigate("main screen")
 
                 val intent = Intent(context, WeatherAppScreen::class.java)
                 context.startActivity(intent)

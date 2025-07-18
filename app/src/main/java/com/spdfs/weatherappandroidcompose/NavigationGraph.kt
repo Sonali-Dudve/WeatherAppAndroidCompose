@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.spdfs.weatherappandroidcompose.ui.SignUpComposeActivity
 import com.spdfs.weatherappandroidcompose.ui.components.SplashScreen
 
 @Composable
@@ -14,7 +15,8 @@ fun NavigationGraph(innerPadding: PaddingValues) {
 
     NavHost(navController = navController, startDestination = "splash screen") {
         composable(route = "splash screen") {
-            SplashScreen(navController = navController)
+            //SplashScreen(navController = navController)
+            SignUpComposeActivity()
         }
 
 //        composable(route = "select city") {
