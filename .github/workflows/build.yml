@@ -1,0 +1,67 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Increment versionCode and versionName
+        run: |
+          VERSION_CODE=$(date +%s)
+          VERSION_NAME="1.0.$(date +%Y%m%d%H%M)"
+          sed -i "s/versionCode = [0-9]\+/versionCode = $VERSION_CODE/" app/build.gradle.kts
+          sed -i "s/versionName = \".*\"/versionName = \"$VERSION_NAME\"/" app/build.gradle.kts
+          echo "Updated versionCode to $VERSION_CODE and versionName to $VERSION_NAME"
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: List APKs
+        run: find app/build/outputs -type f
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install gh
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "Automated release for $GITHUB_REF_NAME" \
+            app/build/outputs/apk/release/app-release.apk
